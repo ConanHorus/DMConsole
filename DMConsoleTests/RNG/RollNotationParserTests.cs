@@ -19,11 +19,26 @@ namespace DMConsoleTests.RNG
     {
       var rollNotationParser = new RollNotationParser();
 
-      var rollInstructionStack = rollNotationParser.Parse("3d6");
+      var postfix = rollNotationParser.Parse("3d6");
 
-      Assert.AreEqual(3, rollInstructionStack.Pop().Total, "Instruction 1");
-      Assert.AreEqual(6, rollInstructionStack.Pop().Total, "Instruction 2");
-      Assert.AreEqual(RollNotation.D, rollInstructionStack.Pop().Instruction, "Instruction 3");
+      Assert.AreEqual(3, postfix.Dequeue().Total, "Instruction 1");
+      Assert.AreEqual(6, postfix.Dequeue().Total, "Instruction 2");
+      Assert.AreEqual(RollNotation.D, postfix.Dequeue().Instruction, "Instruction 3");
+    }
+
+    /// <summary>
+    /// Tests converting "3d6" into infix instructions.
+    /// </summary>
+    [TestMethod]
+    public void ConvertNotation_3D6()
+    {
+      var rollNotationParser = new RollNotationParser();
+
+      var infix = rollNotationParser.Convert("3d6");
+
+      Assert.AreEqual(3, infix[0].Total, "Instruction 1");
+      Assert.AreEqual(RollNotation.D, infix[1].Instruction, "Instruction 2");
+      Assert.AreEqual(6, infix[2].Total, "Instruction 3");
     }
   }
 }

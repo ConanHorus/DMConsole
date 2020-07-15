@@ -52,7 +52,7 @@ namespace DMConsole.RNG
       }
 
       var instructions = this.rollNotationParser.Parse(expression);
-      return this.rollProcessor(instructions);
+      return RollProcessor.Process(instructions, this.randomNumberGenerator);
     }
   }
 }
