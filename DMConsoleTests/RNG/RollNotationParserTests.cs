@@ -17,9 +17,7 @@ namespace DMConsoleTests.RNG
     [TestMethod]
     public void Parse_3D6()
     {
-      var rollNotationParser = new RollNotationParser();
-
-      var postfix = rollNotationParser.Parse("3d6");
+      var postfix = RollNotationParser.Parse("3d6");
 
       Assert.AreEqual(3, postfix.Dequeue().Total, "Instruction 1");
       Assert.AreEqual(6, postfix.Dequeue().Total, "Instruction 2");
@@ -32,9 +30,7 @@ namespace DMConsoleTests.RNG
     [TestMethod]
     public void ConvertNotation_3D6()
     {
-      var rollNotationParser = new RollNotationParser();
-
-      var infix = rollNotationParser.Convert("3d6");
+      var infix = RollNotationParser.Convert("3d6");
 
       Assert.AreEqual(3, infix[0].Total, "Instruction 1");
       Assert.AreEqual(RollNotation.D, infix[1].Instruction, "Instruction 2");

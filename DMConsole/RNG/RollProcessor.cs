@@ -1,6 +1,7 @@
 ﻿// This file is under the MIT license.
 
 using System.Collections.Generic;
+using DMConsole.RNG.InstructionChain;
 
 namespace DMConsole.RNG
 {
@@ -17,46 +18,16 @@ namespace DMConsole.RNG
     /// <returns>Roll result.</returns>
     public static RollResult Process(Queue<RollInstruction> postfix, IRandomNumberGenerator random)
     {
+      RollInstructionChain.SetRandom(random);
+
       var valueStack = new Stack<RollInstruction>();
+      bool more;
 
-      while (postfix.Count > 0)
+      do
       {
-        var next = postfix.Dequeue();
-
-        if (next.IsInstruction)
-        {
-          switch (next.Instruction)
-          {
-            case RollNotation.D:
-              int rolled = 0;
-              var sides = valueStack.Pop();
-              var number = valueStack.Pop();
-              for (int i = 0; i < number.Total; i++)
-              {
-                rolled += random.Next(1, sides.Total);
-              }
-
-              valueStack.Push(new RollInstruction(rolled));
-              break;
-
-            case RollNotation.Add:
-              var b = valueStack.Pop();
-              var a = valueStack.Pop();
-              valueStack.Push(new RollInstruction(a.Total + b.Total));
-              break;
-
-            case RollNotation.Subtract:
-              var d = valueStack.Pop();
-              var c = valueStack.Pop();
-              valueStack.Push(new RollInstruction(c.Total - d.Total));
-              break;
-          }
-        }
-        else
-        {
-          valueStack.Push(next);
-        }
+        more = RollInstructionChain.PerformInstruction(postfix, valueStack);
       }
+      while (more);
 
       return new RollResult(valueStack.Pop().Total);
     }

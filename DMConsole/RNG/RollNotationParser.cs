@@ -1,26 +1,27 @@
 ﻿// This file is under the MIT license.
 
 using System.Collections.Generic;
+using DMConsole.RNG.InstructionChain;
 
 namespace DMConsole.RNG
 {
   /// <summary>
   /// Roll notation parsing class.
   /// </summary>
-  public class RollNotationParser
+  public static class RollNotationParser
   {
     /// <summary>
     /// Parses roll notation into postfix roll instructions.
     /// </summary>
     /// <param name="notation">Notation to parse.</param>
     /// <returns>Roll instructions as postfix.</returns>
-    public Queue<RollInstruction> Parse(string notation)
+    public static Queue<RollInstruction> Parse(string notation)
     {
-      var infix = this.Convert(notation);
+      // todo add notation validation.
+      var infix = Convert(notation);
       var stack = new Stack<RollInstruction>();
       var postfix = new Queue<RollInstruction>();
 
-      RollInstruction st;
       foreach (var inst in infix)
       {
         if (inst.IsValue)
@@ -29,21 +30,7 @@ namespace DMConsole.RNG
         }
         else
         {
-          while (stack.Count > 0)
-          {
-            st = stack.Pop();
-            if (st.Instruction.GetPriority() >= inst.Instruction.GetPriority())
-            {
-              postfix.Enqueue(st);
-            }
-            else
-            {
-              stack.Push(st);
-              break;
-            }
-          }
-
-          stack.Push(inst);
+          PostfixInstruction(inst, stack, postfix);
         }
       }
 
@@ -60,57 +47,68 @@ namespace DMConsole.RNG
     /// </summary>
     /// <param name="notation">Notation to convert.</param>
     /// <returns>Roll instructions as infix.</returns>
-    public List<RollInstruction> Convert(string notation)
+    public static List<RollInstruction> Convert(string notation)
     {
-      bool wasDigit = false;
-      int number = 0;
+      int index = 0;
       var infix = new List<RollInstruction>();
 
-      foreach (char c in notation)
+      while (index < notation.Length)
       {
-        if (char.IsDigit(c))
+        var parsed = RollInstructionChain.ParseNextInstruction(notation, index);
+        if (parsed.success)
         {
-          number *= 10;
-          number += c - '0';
-          wasDigit = true;
-        }
-        else
-        {
-          if (wasDigit)
-          {
-            infix.Add(new RollInstruction(number));
-          }
-
-          wasDigit = false;
-          number = 0;
+          infix.Add(parsed.inst);
         }
 
-        switch (c)
-        {
-          case 'd':
-          case 'D':
-            infix.Add(new RollInstruction(RollNotation.D));
-            break;
-
-          case '+':
-            infix.Add(new RollInstruction(RollNotation.Add));
-            break;
-
-          case '-':
-            infix.Add(new RollInstruction(RollNotation.Subtract));
-            break;
-
-          default:
-            break;
-        }
-      }
-
-      if (wasDigit)
-      {
-        infix.Add(new RollInstruction(number));
+        index = parsed.index;
       }
 
       return infix;
+    }
+
+    /// <summary>
+    /// Post-fixes instruction.
+    /// </summary>
+    /// <param name="inst">Instruction to postfix.</param>
+    /// <param name="stack">Stack.</param>
+    /// <param name="postfix">Postix.</param>
+    private static void PostfixInstruction(
+      RollInstruction inst,
+      Stack<RollInstruction> stack,
+      Queue<RollInstruction> postfix)
+    {
+      RollInstruction holder;
+      if (inst.Instruction == RollNotation.OpenParen)
+      {
+        stack.Push(inst);
+      }
+      else if (inst.Instruction == RollNotation.CloseParen)
+      {
+        holder = stack.Pop();
+        while (holder.Instruction != RollNotation.OpenParen)
+        {
+          postfix.Enqueue(holder);
+          holder = stack.Pop();
+        }
+      }
+      else
+      {
+        while (stack.Count > 0)
+        {
+          holder = stack.Pop();
+          if (holder.Instruction.GetPriority() >= inst.Instruction.GetPriority())
+          {
+            postfix.Enqueue(holder);
+          }
+          else
+          {
+            stack.Push(holder);
+            break;
+          }
+        }
+      }
+
+      stack.Push(inst);
     }
   }
 }

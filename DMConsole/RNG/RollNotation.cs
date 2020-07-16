@@ -26,6 +26,16 @@ namespace DMConsole.RNG
     /// <summary>
     /// Subtraction.
     /// </summary>
-    Subtract = 0x0001_0003
+    Subtract = 0x0001_0003,
+
+    /// <summary>
+    /// Open paren.
+    /// </summary>
+    OpenParen = 0x0000_0004,
+
+    /// <summary>
+    /// Close paren.
+    /// </summary>
+    CloseParen = 0x0000_0005
   }
 }

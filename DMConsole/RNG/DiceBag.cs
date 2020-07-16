@@ -15,11 +15,6 @@ namespace DMConsole.RNG
     private readonly IRandomNumberGenerator randomNumberGenerator;
 
     /// <summary>
-    /// Roll notation parser.
-    /// </summary>
-    private readonly RollNotationParser rollNotationParser = new RollNotationParser();
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="DiceBag"/> class.
     /// </summary>
     /// <param name="randomNumberGenerator">Random number generator.</param>
@@ -51,7 +46,7 @@ namespace DMConsole.RNG
         throw new ArgumentNullException(nameof(expression));
       }
 
-      var instructions = this.rollNotationParser.Parse(expression);
+      var instructions = RollNotationParser.Parse(expression);
       return RollProcessor.Process(instructions, this.randomNumberGenerator);
     }
   }
