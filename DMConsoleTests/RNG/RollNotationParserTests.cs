@@ -36,5 +36,49 @@ namespace DMConsoleTests.RNG
       Assert.AreEqual(RollNotation.D, infix[1].Instruction, "Instruction 2");
       Assert.AreEqual(6, infix[2].Total, "Instruction 3");
     }
+
+    /// <summary>
+    /// Tests validation method on good notation.
+    /// </summary>
+    [TestMethod]
+    public void Validate_Good()
+    {
+      var validation = RollNotationParser.Validate("(1d6)d(5)+36*2");
+
+      Assert.IsTrue(validation.IsGood);
+    }
+
+    /// <summary>
+    /// Tests validation method on notation with too many open parens.
+    /// </summary>
+    [TestMethod]
+    public void Validate_TooManyOpenParens()
+    {
+      var validation = RollNotationParser.Validate("(1d6d(5)+36*2");
+
+      Assert.IsFalse(validation.IsGood);
+    }
+
+    /// <summary>
+    /// Tests validation method on notation with too many close parens.
+    /// </summary>
+    [TestMethod]
+    public void Validate_TooManyCloseParens()
+    {
+      var validation = RollNotationParser.Validate("1d6)d(5)+36*2");
+
+      Assert.IsFalse(validation.IsGood);
+    }
+
+    /// <summary>
+    /// Tests validation method on notation with missmatch parens.
+    /// </summary>
+    [TestMethod]
+    public void Validate_MissMatchParens()
+    {
+      var validation = RollNotationParser.Validate("1d6)d(5+36*2");
+
+      Assert.IsFalse(validation.IsGood);
+    }
   }
 }

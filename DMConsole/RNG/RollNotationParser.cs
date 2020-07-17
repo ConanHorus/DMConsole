@@ -17,7 +17,12 @@ namespace DMConsole.RNG
     /// <returns>Roll instructions as postfix.</returns>
     public static Queue<RollInstruction> Parse(string notation)
     {
-      // todo add notation validation.
+      var validation = Validate(notation);
+      if (!validation.IsGood)
+      {
+        throw new NotationValidationException(validation.Message);
+      }
+
       var infix = Convert(notation);
       var stack = new Stack<RollInstruction>();
       var postfix = new Queue<RollInstruction>();
@@ -40,6 +45,41 @@ namespace DMConsole.RNG
       }
 
       return postfix;
+    }
+
+    /// <summary>
+    /// Validation method.
+    /// </summary>
+    /// <param name="notation">Notation to validate.</param>
+    /// <returns>Notation validation response.</returns>
+    public static NotationValidation Validate(string notation)
+    {
+      int parenLevel = 0;
+
+      foreach (char c in notation)
+      {
+        if (c == '(')
+        {
+          parenLevel++;
+        }
+
+        if (c == ')')
+        {
+          parenLevel--;
+        }
+
+        if (parenLevel < 0)
+        {
+          return NotationValidation.Bad("Miss-match parentheses.");
+        }
+      }
+
+      if (parenLevel > 0)
+      {
+        return NotationValidation.Bad("Miss-match parentheses.");
+      }
+
+      return NotationValidation.Good();
     }
 
     /// <summary>

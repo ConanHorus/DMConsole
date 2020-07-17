@@ -97,12 +97,14 @@ namespace DMConsole.RNG.InstructionChain
       {
         links = new IRollInstructionLink[]
         {
-          new Link_Add(),
-          new Link_CloseParen(),
-          new Link_D(),
           new Link_Number(),
+          new Link_D(),
           new Link_OpenParen(),
-          new Link_Subtract()
+          new Link_CloseParen(),
+          new Link_Add(),
+          new Link_Subtract(),
+          new Link_Multiply(),
+          new Link_Divide()
         };
       }
     }

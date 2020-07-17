@@ -36,6 +36,16 @@ namespace DMConsole.RNG
     /// <summary>
     /// Close paren.
     /// </summary>
-    CloseParen = 0x0000_0005
+    CloseParen = 0x0000_0005,
+
+    /// <summary>
+    /// Multiply.
+    /// </summary>
+    Multiply = 0x0010_0006,
+
+    /// <summary>
+    /// Divide.
+    /// </summary>
+    Divide = 0x0010_0007
   }
 }
